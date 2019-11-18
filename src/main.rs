@@ -5,7 +5,6 @@ use std::env::args;
 use std::fs::File;
 use std::io::BufReader;
 use std::io::BufWriter;
-use std::io::Read;
 
 fn main() {
     let args = args().collect::<Vec<String>>();
@@ -16,7 +15,7 @@ fn main() {
     let in_file = File::open(in_path)
         .expect(&format!("Failed to read file: {}", in_path));
     let br = BufReader::new(in_file);
-    let v: Value = serde_json::from_reader(br).unwrap();
+    let v: Value = from_reader(br).unwrap();
     let bw = BufWriter::new(File::create(out_path).unwrap());
     to_writer_pretty(bw, &v).unwrap();
 }
