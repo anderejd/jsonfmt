@@ -12,3 +12,12 @@ Syntax:
 If passed a single file path the file will be overwritten. If passed two
 arguments the second file path will be used for writing the output.
 
+Changelog
+---------
+
+### 0.1.1
+ - Added a readme.
+
+### 0.1.0
+ - A first tiny experiment, but working.
+
