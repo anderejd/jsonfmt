@@ -3,9 +3,7 @@ jsonfmt
 
 [![Build Status](https://github.com/anderejd/jsonfmt/workflows/Rust/badge.svg)](https://github.com/anderejd/jsonfmt/actions)
 
-(https://github.com/anderejd/jsonfmt/workflows/Rust/badge.svg)
-
-Pretty print json files, back to the same file or a new file.
+A tiny command line program for pretty printing/formatting of json files.
 
 Syntax:
  - Argument 1: input file path
