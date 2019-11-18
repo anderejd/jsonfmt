@@ -4,6 +4,8 @@ version = "0.1.0"
 authors = ["anderejd <rajder@gmail.com>"]
 edition = "2018"
 repository = "https://github.com/anderejd/jsonfmt"
+license = "Apache-2.0/MIT"
+description = "Pretty printing/formatting of json files."
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
