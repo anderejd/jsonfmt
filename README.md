@@ -15,6 +15,9 @@ arguments the second file path will be used for writing the output.
 Changelog
 ---------
 
+### 0.2.0
+ - Traded some memory usage for more speed.
+
 ### 0.1.1
  - Added a readme.
 
