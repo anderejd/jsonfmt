@@ -1,31 +1,121 @@
-use serde_json::Value;
-use std::env::args;
-use std::fs;
+#![forbid(warnings)]
+#![forbid(unsafe_code)]
 
-fn main() {
-    let args = args().collect::<Vec<String>>();
-    let in_path = &args
-        .get(1)
-        .expect("Syntax error, expected input json path as first argument.");
-    let out_path = args.get(2).unwrap_or(in_path);
-    let in_json = fs::read_to_string(in_path).unwrap();
-    let v: Value = serde_json::from_str(&in_json).unwrap();
-    drop(in_json);
-    let out_json = serde_json::to_string_pretty(&v).unwrap();
-    fs::write(out_path, out_json).unwrap();
+use std::fs;
+use std::io;
+use std::io::BufReader;
+use std::io::BufWriter;
+use std::path::PathBuf;
+
+enum Input {
+    Stdin,
+    File(PathBuf),
 }
 
-// This seems to be slower, TODO: revisit later.
-//fn with_readers_and_writers_seems_to_be_slow() {
-//    use serde_json::from_reader;
-//    use serde_json::to_writer_pretty;
-//    use std::fs::File;
-//    use std::io::BufReader;
-//    use std::io::BufWriter;
-//    let mut in_file = File::open(in_path)
-//        .expect(&format!("Failed to read file: {}", in_path));
-//    let br = BufReader::new(in_file);
-//    let v: Value = from_reader(br).unwrap();
-//    let bw = BufWriter::new(File::create(out_path).unwrap());
-//    to_writer_pretty(bw, &v).unwrap();
-//}
+enum Output {
+    Stdout,
+    File(PathBuf),
+}
+
+struct IoModes {
+    input: Input,
+    output: Output,
+}
+
+struct Args {
+    help: bool,
+    output_file: Option<String>,
+    minimize: bool,
+    free: Vec<String>,
+}
+
+fn parse_args() -> Result<Args, Box<dyn std::error::Error>> {
+    let mut args = pico_args::Arguments::from_env();
+    let args = Args {
+        help: args.contains(["-h", "--help"]),
+        output_file: args.opt_value_from_str("-o")?,
+        minimize: args.contains(["-m", "--minimize"]),
+        free: args.free()?,
+    };
+    Ok(args)
+}
+
+fn resolve_io_modes(args: &Args) -> IoModes {
+    if args.free.len() > 1 {
+        panic!(
+            "Syntax error, found multiple input filenames: {:?}",
+            args.free
+        );
+    }
+    if args.free.len() == 1 {
+        let input_file = PathBuf::from(&args.free[0]);
+        let input = Input::File(input_file.clone());
+        let output = args
+            .output_file
+            .as_ref()
+            .map(|s| Output::File(PathBuf::from(s)))
+            .unwrap_or_else(|| Output::File(input_file));
+        IoModes { input, output }
+    } else {
+        let input = Input::Stdin;
+        let output = args
+            .output_file
+            .as_ref()
+            .map(|s| Output::File(PathBuf::from(s)))
+            .unwrap_or(Output::Stdout);
+        IoModes { input, output }
+    }
+}
+
+fn main() {
+    let args = parse_args().unwrap();
+    if args.help {
+        println!("Usage: jsonfmt [optional input filename] [flags]");
+        println!();
+        println!("  -o [filename]    Write output to a new file.");
+        println!("  -m               Minimize instead of prettify.");
+        return;
+    }
+    let io_modes = resolve_io_modes(&args);
+    let v = match io_modes.input {
+        Input::File(path) => {
+            // This currently seems to be faster than using BufReader and
+            // serde_json::from_reader, at the cost of memory usage.
+            // TODO: Review and revisit later.
+            let s = fs::read_to_string(path).unwrap();
+            let v: serde_json::Value = serde_json::from_str(&s).unwrap();
+            v
+        }
+        Input::Stdin => {
+            let stdin = io::stdin();
+            let handle = stdin.lock();
+            let bytes = 1024 * 1024;
+            let br = BufReader::with_capacity(bytes, handle);
+            let v: serde_json::Value = serde_json::from_reader(br).unwrap();
+            v
+        }
+    };
+    match io_modes.output {
+        Output::File(path) => {
+            let serialize = if args.minimize {
+                serde_json::to_string
+            } else {
+                serde_json::to_string_pretty
+            };
+            let s = serialize(&v).unwrap();
+            fs::write(path, s).unwrap();
+        }
+        Output::Stdout => {
+            let stdout = io::stdout();
+            let handle = stdout.lock();
+            let bytes = 1024 * 1024;
+            let bw = BufWriter::with_capacity(bytes, handle);
+            let serialize = if args.minimize {
+                serde_json::to_writer
+            } else {
+                serde_json::to_writer_pretty
+            };
+            serialize(bw, &v).unwrap();
+        }
+    }
+}
