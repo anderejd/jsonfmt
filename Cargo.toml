@@ -1,7 +1,9 @@
 [package]
 authors = ["anderejd <rajder@gmail.com>"]
-description = "Pretty printing/formatting of json files."
+categories = ["command-line-utilities"]
+description = "A command line program for pretty-printing or minimizing json files."
 edition = "2018"
+keywords = ["json", "format", "minimize", "pretty-print", "beautify"]
 license = "Apache-2.0/MIT"
 name = "jsonfmt"
 readme = "README.md"
