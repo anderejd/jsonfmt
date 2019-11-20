@@ -26,6 +26,9 @@ cat in_file.json | jsonfmt -m -o out_file.json
 Changelog
 ---------
 
+### 0.3.1
+ - Added categories and keywords to Cargo.toml.
+
 ### 0.3.0
  - BUGFIX: Preserve order of object properties.
  - BUGFIX: Preserve original number precision.
