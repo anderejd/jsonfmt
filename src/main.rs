@@ -2,6 +2,7 @@
 #![forbid(unsafe_code)]
 
 use std::fs;
+use std::fs::File;
 use std::io;
 use std::io::BufReader;
 use std::io::BufWriter;
@@ -97,25 +98,24 @@ fn main() {
     };
     match io_modes.output {
         Output::File(path) => {
-            let serialize = if args.minimize {
-                serde_json::to_string
-            } else {
-                serde_json::to_string_pretty
-            };
-            let s = serialize(&v).unwrap();
-            fs::write(path, s).unwrap();
+            let f = File::create(path).unwrap();
+            serialize(v, &args, f);
         }
         Output::Stdout => {
             let stdout = io::stdout();
             let handle = stdout.lock();
-            let bytes = 1024 * 1024;
-            let bw = BufWriter::with_capacity(bytes, handle);
-            let serialize = if args.minimize {
-                serde_json::to_writer
-            } else {
-                serde_json::to_writer_pretty
-            };
-            serialize(bw, &v).unwrap();
+            serialize(v, &args, handle);
         }
     }
+}
+
+fn serialize<W: std::io::Write>(v: serde_json::Value, args: &Args, w: W) {
+    let bytes = 1024 * 1024;
+    let bw = BufWriter::with_capacity(bytes, w);
+    let write_json = if args.minimize {
+        serde_json::to_writer
+    } else {
+        serde_json::to_writer_pretty
+    };
+    write_json(bw, &v).unwrap();
 }
