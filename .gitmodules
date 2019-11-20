@@ -1,0 +1,3 @@
+[submodule "sf-city-lots-json"]
+	path = sf-city-lots-json
+	url = git@github.com:anderejd/sf-city-lots-json.git
