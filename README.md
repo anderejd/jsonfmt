@@ -3,7 +3,7 @@ jsonfmt
 
 [![Build Status](https://github.com/anderejd/jsonfmt/workflows/Build%20%26%20Test/badge.svg)](https://github.com/anderejd/jsonfmt/actions)
 
-A tiny command line program for pretty-printing or minimizing json files.
+A command line program for pretty-printing or minimizing json files.
 
 Usage examples
 --------------
