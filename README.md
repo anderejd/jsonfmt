@@ -29,7 +29,7 @@ Changelog
 ### 0.3.0
  - BUGFIX: Preserve order of object properties.
  - BUGFIX: Preserve original number precision.
- - Feature: `-m --minimize` feature.
+ - Feature: `-m --minimize`.
  - Feature: `-o` for writing to a new file.
  - Feature: Reading from stdin.
  - Feature: Writing to stdout.
