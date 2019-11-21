@@ -10,6 +10,9 @@ readme = "README.md"
 repository = "https://github.com/anderejd/jsonfmt"
 version = "0.4.0"
 
+# Exclude a large json file used for manual benchmarking.
+exclude = ["sf-city-lots-json/"]
+
 [badges]
 maintenance = { status = "experimental" }
 
