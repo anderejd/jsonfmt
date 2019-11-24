@@ -11,7 +11,11 @@ repository = "https://github.com/anderejd/jsonfmt"
 version = "0.4.1"
 
 # Exclude a large json file used for manual benchmarking.
-exclude = ["sf-city-lots-json/"]
+exclude = [
+	"/sf-city-lots-json/",
+	"/.github/",
+	"/.gitmodules"
+]
 
 [badges]
 maintenance = { status = "experimental" }
