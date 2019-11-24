@@ -26,6 +26,9 @@ cat in_file.json | jsonfmt -m -o out_file.json
 Changelog
 ---------
 
+### 0.4.1
+ - Better build flags in Cargo.toml for increased optimization.
+
 ### 0.4.0
  - Reduced peak memory usage when writing the output to a file.
 
